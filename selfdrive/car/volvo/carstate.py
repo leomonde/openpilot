@@ -68,7 +68,7 @@ class CarState(CarStateBase):
     ret.rightBlinker = cp.vl["MiscCarInfo"]["TurnSignal"] == 3
 
     # lock info
-    ret.doorOpen = not all(cp.vl["Doors"]["DriverDoorClosed"], cp.vl["Doors"]["PassengerDoorClosed"])
+    ret.doorOpen = not(cp.vl["Doors"]["DriverDoorClosed"])
     ret.seatbeltUnlatched = False  # TODO
 
     # Store info from servo message PSCM1
