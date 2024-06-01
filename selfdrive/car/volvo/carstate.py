@@ -2,14 +2,14 @@ from cereal import car
 from opendbc.can.parser import CANParser
 from openpilot.common.conversions import Conversions as CV
 from openpilot.selfdrive.car.interfaces import CarStateBase
-from openpilot.selfdrive.car.volvo.values import DBC
+from openpilot.selfdrive.car.volvo.values import CarControllerParams, DBC
 
 
 class CarState(CarStateBase):
   def __init__(self, CP):
     super().__init__(CP)
     self.cruiseState_enabled_prev = False
-    self.count_zero_steeringTorque = 0
+    self.eps_torque_timer = 0
 
   def update(self, cp, cp_cam):
     ret = car.CarState.new_message()
@@ -32,21 +32,6 @@ class CarState(CarStateBase):
     ret.steeringTorqueEps = cp.vl["PSCM1"]["LKATorque"]
     ret.steeringPressed = False  # TODO
 
-    # Check if servo stops responding when ACC is active
-    if ret.cruiseState.enabled and ret.vEgo > self.CP.minSteerSpeed:
-      # Reset counter on entry
-      if self.cruiseState_enabled_prev != ret.cruiseState.enabled:
-        self.count_zero_steeringTorque = 0
-
-      # Count up when no torque from servo detected
-      if ret.steeringTorqueEps == 0:
-        self.count_zero_steeringTorque += 1
-      else:
-        self.count_zero_steeringTorque = 0
-
-      # Set fault if above threshold
-      ret.steerFaultTemporary = self.count_zero_steeringTorque >= 1000
-
     # cruise state
     ret.cruiseState.speed = cp.vl["ACC_Speed"]["ACC_Speed"] * CV.KPH_TO_MS
     ret.cruiseState.available = cp_cam.vl["FSM0"]["ACCStatus"] in (2, 6, 7)
@@ -55,6 +40,23 @@ class CarState(CarStateBase):
     ret.cruiseState.nonAdaptive = False  # TODO
     ret.accFaulted = False
     self.acc_distance = cp_cam.vl["FSM1"]["ACC_Distance"]
+
+    # Check if servo stops responding when ACC is active
+    if ret.cruiseState.enabled and ret.vEgo > self.CP.minSteerSpeed:
+      # Reset counter on entry
+      if not self.cruiseState_enabled_prev:
+        self.eps_torque_timer = 0
+
+      # Count up when no torque from servo detected
+      if ret.steeringTorqueEps == 0:
+        self.eps_torque_timer += 1
+      else:
+        self.eps_torque_timer = 0
+
+      # Set fault if above threshold
+      ret.steerFaultTemporary = self.eps_torque_timer >= CarControllerParams.STEER_TIMEOUT
+
+    self.cruiseState_enabled_prev = ret.cruiseState.enabled
 
     # gear
     ret.gearShifter = car.CarState.GearShifter.drive  # TODO
@@ -74,8 +76,6 @@ class CarState(CarStateBase):
     # Store info from servo message PSCM1
     # FSM (camera) checks if LKAActive & LKATorque active when not requested
     self.pscm_stock_values = cp.vl["PSCM1"]
-
-    self.cruiseState_enabled_prev = ret.cruiseState.enabled
 
     return ret
 
