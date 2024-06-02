@@ -61,7 +61,7 @@ class CarControllerParams:
 
   # Temporary steer fault timeout
   # Maximum time to continuously read 0 torque from EPS
-  STEER_TIMEOUT = 0.25 / DT_CTRL
+  STEER_TIMEOUT = 1 / DT_CTRL
 
   # EUCD
   # When changing steer direction steering request need to be blocked.
