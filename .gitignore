@@ -82,3 +82,7 @@ build/
 
 poetry.toml
 Pipfile
+cereal
+opendbc
+rednose_repo
+teleoprtc_repo
