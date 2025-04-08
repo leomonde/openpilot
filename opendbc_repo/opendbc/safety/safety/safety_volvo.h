@@ -13,7 +13,7 @@
 #define VOLVO_AUX_BUS  1U
 #define VOLVO_CAM_BUS  2U
 
-const CanMsg VOLVO_EUCD_TX_MSGS[] = {
+static const CanMsg VOLVO_EUCD_TX_MSGS[] = {
   {VOLVO_EUCD_CCButtons, VOLVO_MAIN_BUS, 8},
   {VOLVO_EUCD_PSCM1,     VOLVO_CAM_BUS,  8},
   {VOLVO_EUCD_FSM2,      VOLVO_MAIN_BUS, 8},
