@@ -151,6 +151,10 @@ class CarSpecificEvents:
       if self.low_speed_alert:
         events.add(EventName.belowSteerSpeed)
 
+    elif self.CP.carName == 'volvo':
+      #events = Events()
+      events = self.create_common_events(CS, CS_prev, pcm_enable=not self.CP.openpilotLongitudinalControl)
+
     else:
       events = self.create_common_events(CS, CS_prev)
 

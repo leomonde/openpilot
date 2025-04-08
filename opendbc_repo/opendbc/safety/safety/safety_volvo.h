@@ -14,10 +14,10 @@
 #define VOLVO_CAM_BUS  2U
 
 static const CanMsg VOLVO_EUCD_TX_MSGS[] = {
-  {VOLVO_EUCD_CCButtons, VOLVO_MAIN_BUS, 8},
-  {VOLVO_EUCD_PSCM1,     VOLVO_CAM_BUS,  8},
-  {VOLVO_EUCD_FSM2,      VOLVO_MAIN_BUS, 8},
-  {VOLVO_EUCD_FSM3,      VOLVO_MAIN_BUS, 8}
+  {VOLVO_EUCD_CCButtons, VOLVO_MAIN_BUS, 8,0},
+  {VOLVO_EUCD_PSCM1,     VOLVO_CAM_BUS,  8,0},
+  {VOLVO_EUCD_FSM2,      VOLVO_MAIN_BUS, 8,0},
+  {VOLVO_EUCD_FSM3,      VOLVO_MAIN_BUS, 8,0}
 };
 
 // TODO: add counters
@@ -101,7 +101,7 @@ static bool volvo_tx_hook(const CANPacket_t *to_send) {
   return tx;
 }
 
-static int volvo_fwd_hook(int bus_num, int addr) {
+static bool volvo_fwd_hook(int bus_num, int addr) {
   int bus_fwd = -1;
 
   switch (bus_num) {
