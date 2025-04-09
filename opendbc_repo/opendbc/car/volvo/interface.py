@@ -1,5 +1,7 @@
 from opendbc.car import get_safety_config, structs
 from opendbc.car.interfaces import CarInterfaceBase
+from opendbc.car.volvo.carcontroller import CarController
+from opendbc.car.volvo.carstate import CarState
 from opendbc.car.volvo.values import CAR
 #from panda import Panda
 
@@ -7,8 +9,11 @@ from opendbc.car.volvo.values import CAR
 #EventName = car.CarEvent.EventName
 
 class CarInterface(CarInterfaceBase):
+  CarState = CarState
+  CarController = CarController
+
   @staticmethod
-  def _get_params(ret: structs.CarParams, candidate, fingerprint, car_fw, experimental_long, docs) -> structs.CarParams:
+  def _get_params(ret: structs.CarParams, candidate: CAR, fingerprint, car_fw, experimental_long, docs) -> structs.CarParams:
     ret.brand = "volvo"
     ret.safetyConfigs = [get_safety_config(structs.CarParams.SafetyModel.volvo)]
     #ret.safetyConfigs[-1].safetyParam |= Panda.SAFETY_VOLVO
