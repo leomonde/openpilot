@@ -13,7 +13,6 @@ class CarState(CarStateBase):
     self.eps_torque_timer = 0
     self.frame = 0
 
-  #def update(self, cp, cp_cam):
   def update(self, can_parsers) -> structs.CarState:
     pt_cp = can_parsers[Bus.pt]
     cam_cp = can_parsers[Bus.cam]
@@ -38,11 +37,11 @@ class CarState(CarStateBase):
     ret.steeringAngleDeg = pt_cp.vl["PSCM1"]["SteeringAngleServo"]
     ret.steeringRateDeg = pt_cp.vl["SAS0"]["SteeringRateOfChange"]
     self.steeringDirection = pt_cp.vl["SAS0"]["SteeringDirection"] # it's 1 with negative angle / steering right
-    ret.steeringTorque = pt_cp.vl["PSCM1"]["EPSTorque"]  
+    ret.steeringTorque = pt_cp.vl["PSCM1"]["EPSTorque"]
     if self.steeringDirection:
       ret.steeringTorque = -abs(ret.steeringTorque)
     ret.steeringTorqueEps = pt_cp.vl["PSCM1"]["LKATorque"]
-    ret.steeringPressed = abs(ret.steeringTorque) > 50    
+    ret.steeringPressed = abs(ret.steeringTorque) > 50
 
     # cruise state
     ret.cruiseState.speed = pt_cp.vl["ACC_Speed"]["ACC_Speed"] * CV.KPH_TO_MS
