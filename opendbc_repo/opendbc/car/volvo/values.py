@@ -2,8 +2,7 @@ from dataclasses import dataclass, field
 from enum import IntEnum
 
 from opendbc.car.structs import CarParams
-from openpilot.common.realtime import DT_CTRL
-from opendbc.car import Bus, CarSpecs, DbcDict, PlatformConfig, Platforms, uds
+from opendbc.car import Bus, CarSpecs, DbcDict, PlatformConfig, Platforms, uds, DT_CTRL
 from opendbc.car.docs_definitions import CarHarness, CarDocs, CarParts
 from opendbc.car.fw_query_definitions import FwQueryConfig, Request, p16
 
@@ -103,8 +102,6 @@ class VolvoCarSpecs(CarSpecs):
 
 
 class CAR(Platforms):
-  config: VolvoEUCDPlatformConfig
-
   VOLVO_V60 = VolvoEUCDPlatformConfig(
     [VolvoCarDocs("Volvo V60")],
     VolvoCarSpecs(mass=1750, wheelbase=2.776),
