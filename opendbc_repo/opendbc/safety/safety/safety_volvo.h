@@ -88,6 +88,8 @@ static bool volvo_tx_hook(const CANPacket_t *to_send) {
     // Signal: LKASteerDirection
     unsigned int mode = GET_BYTE(to_send, 5) & 0x03U;
     bool lka_active = mode != 0U;
+    int desired_angle = ((GET_BYTE(to_send, 3) & 0x3F) << 8) | (GET_BYTE(to_send, 4));
+    desired_angle = desired_angle *0.04 - 327.68;
 
     if (lka_active && !controls_allowed) {
       violation = true;
