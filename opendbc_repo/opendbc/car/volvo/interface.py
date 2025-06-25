@@ -1,15 +1,22 @@
 from cereal import car
-from opendbc.car import get_safety_config
+from opendbc.car import get_safety_config, structs
 from opendbc.car.interfaces import CarInterfaceBase
+from opendbc.car.volvo.carcontroller import CarController
+from opendbc.car.volvo.carstate import CarState
 from opendbc.car.volvo.values import CAR
 
 #ButtonType = car.CarState.ButtonEvent.Type
 #EventName = car.CarEvent.EventName
 
 class CarInterface(CarInterfaceBase):
+  CarState = CarState
+  CarController = CarController
+
   @staticmethod
-  def _get_params(ret, candidate: CAR, fingerprint, car_fw, experimental_long, docs):
-    ret.carName = "volvo"
+  #def _get_params(ret, candidate: CAR, fingerprint, car_fw, experimental_long, docs):
+  def _get_params(ret: structs.CarParams, candidate, fingerprint, car_fw, alpha_long, is_release, docs):
+    ret.brand = "tesla"
+    #ret.carName = "volvo"
     ret.safetyConfigs = [get_safety_config(car.CarParams.SafetyModel.volvo)]
     # ret.dashcamOnly = True
     ret.radarUnavailable = True
