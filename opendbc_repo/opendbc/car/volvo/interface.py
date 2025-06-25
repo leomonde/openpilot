@@ -15,7 +15,7 @@ class CarInterface(CarInterfaceBase):
   @staticmethod
   #def _get_params(ret, candidate: CAR, fingerprint, car_fw, experimental_long, docs):
   def _get_params(ret: structs.CarParams, candidate, fingerprint, car_fw, alpha_long, is_release, docs):
-    ret.brand = "tesla"
+    ret.brand = "volvo"
     #ret.carName = "volvo"
     ret.safetyConfigs = [get_safety_config(car.CarParams.SafetyModel.volvo)]
     # ret.dashcamOnly = True
