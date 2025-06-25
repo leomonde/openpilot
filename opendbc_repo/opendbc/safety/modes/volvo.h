@@ -14,10 +14,10 @@
 #define VOLVO_CAM_BUS  2U
 
 const CanMsg VOLVO_EUCD_TX_MSGS[] = {
-  {VOLVO_EUCD_CCButtons, VOLVO_MAIN_BUS, 8},
-  {VOLVO_EUCD_PSCM1,     VOLVO_CAM_BUS,  8},
-  {VOLVO_EUCD_FSM2,      VOLVO_MAIN_BUS, 8},
-  {VOLVO_EUCD_FSM3,      VOLVO_MAIN_BUS, 8}
+  {VOLVO_EUCD_CCButtons, VOLVO_MAIN_BUS, 8, .check_relay = false},
+  {VOLVO_EUCD_PSCM1,     VOLVO_CAM_BUS,  8, .check_relay = false},
+  {VOLVO_EUCD_FSM2,      VOLVO_MAIN_BUS, 8, .check_relay = false},
+  {VOLVO_EUCD_FSM3,      VOLVO_MAIN_BUS, 8, .check_relay = false}
 };
 
 // TODO: add counters
@@ -28,11 +28,11 @@ RxCheck volvo_eucd_rx_checks[] = {
   {.msg = {{VOLVO_EUCD_Brake_Info,    VOLVO_MAIN_BUS, 8, .frequency = 50U}, { 0 }, { 0 }}},
 };
 
-static bool volvo_lkas_msg_check(int addr) {
-  return (addr == VOLVO_EUCD_FSM0)
-      || (addr == VOLVO_EUCD_FSM2)
-      || (addr == VOLVO_EUCD_FSM3);
-}
+//static bool volvo_lkas_msg_check(int addr) {
+//  return (addr == VOLVO_EUCD_FSM0)
+//      || (addr == VOLVO_EUCD_FSM2)
+//      || (addr == VOLVO_EUCD_FSM3);
+//}
 
 static void volvo_rx_hook(const CANPacket_t *to_push) {
   int bus = GET_BUS(to_push);
@@ -59,7 +59,7 @@ static void volvo_rx_hook(const CANPacket_t *to_push) {
 
     // If steering controls messages are received on the destination bus, it's an indication
     // that the relay might be malfunctioning.
-    generic_rx_checks(volvo_lkas_msg_check(addr));
+    // generic_rx_checks(volvo_lkas_msg_check(addr));
   } else if (bus == VOLVO_CAM_BUS) {
     if (addr == VOLVO_EUCD_FSM0) {
       // Signal: ACCStatus
@@ -101,32 +101,32 @@ static bool volvo_tx_hook(const CANPacket_t *to_send) {
   return tx;
 }
 
-static int volvo_fwd_hook(int bus_num, int addr) {
-  int bus_fwd = -1;
+//static int volvo_fwd_hook(int bus_num, int addr) {
+//  int bus_fwd = -1;
 
-  switch (bus_num) {
-    case VOLVO_MAIN_BUS:
-      if (addr == VOLVO_EUCD_PSCM1) {
-        // Block PSCM state message
-        bus_fwd = -1;
-      } else {
-        // Forward remaining traffic
-        bus_fwd = VOLVO_CAM_BUS;
-      }
-      break;
-    case VOLVO_CAM_BUS:
-      if (addr == VOLVO_EUCD_FSM2) {
-        // Block stock LKA message
-        bus_fwd = -1;
-      } else {
-        // Forward remaining traffic
-        bus_fwd = VOLVO_MAIN_BUS;
-      }
-      break;
-  }
+//  switch (bus_num) {
+//    case VOLVO_MAIN_BUS:
+//      if (addr == VOLVO_EUCD_PSCM1) {
+//        // Block PSCM state message
+//        bus_fwd = -1;
+//      } else {
+//        // Forward remaining traffic
+//        bus_fwd = VOLVO_CAM_BUS;
+//      }
+//      break;
+//    case VOLVO_CAM_BUS:
+//      if (addr == VOLVO_EUCD_FSM2) {
+//        // Block stock LKA message
+//        bus_fwd = -1;
+//      } else {
+//        // Forward remaining traffic
+//        bus_fwd = VOLVO_MAIN_BUS;
+//      }
+//      break;
+//  }
 
-  return bus_fwd;
-}
+//  return bus_fwd;
+//}
 
 static safety_config volvo_init(uint16_t param) {
   UNUSED(param);
@@ -137,5 +137,5 @@ const safety_hooks volvo_hooks = {
   .init = volvo_init,
   .rx = volvo_rx_hook,
   .tx = volvo_tx_hook,
-  .fwd = volvo_fwd_hook,
+  //.fwd = volvo_fwd_hook,
 };

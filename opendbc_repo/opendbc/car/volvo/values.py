@@ -2,9 +2,10 @@ from dataclasses import dataclass, field
 from enum import IntEnum
 
 from cereal import car
-from panda.python import uds
+#from panda.python import uds
 from openpilot.common.realtime import DT_CTRL
-from opendbc.car import Bus, AngleRateLimit, CarSpecs, DbcDict, PlatformConfig, Platforms
+#from opendbc.car import Bus, AngleRateLimit, CarSpecs, DbcDict, PlatformConfig, Platforms
+from opendbc.car import Bus, CarSpecs, DbcDict, PlatformConfig, Platforms
 from opendbc.car.docs_definitions import CarHarness, CarDocs, CarParts
 from opendbc.car.fw_query_definitions import FwQueryConfig, Request, p16
 
@@ -58,8 +59,8 @@ class SteerDirection(IntEnum):
 
 class CarControllerParams:
   # EUCD: Torque limit for steering is 50 CAN units
-  ANGLE_RATE_LIMIT_UP = AngleRateLimit(speed_bp=[0., 8.33, 13.89, 19.44, 25., 30.55, 36.1], angle_v=[2., 1.2, .25, .20, .15, .10, .10])
-  ANGLE_RATE_LIMIT_DOWN = AngleRateLimit(speed_bp=[0., 8.33, 13.89, 19.44, 25., 30.55, 36.1], angle_v=[2., 1.2, .25, .20, .15, .10, .10])
+  #ANGLE_RATE_LIMIT_UP = AngleRateLimit(speed_bp=[0., 8.33, 13.89, 19.44, 25., 30.55, 36.1], angle_v=[2., 1.2, .25, .20, .15, .10, .10])
+  #ANGLE_RATE_LIMIT_DOWN = AngleRateLimit(speed_bp=[0., 8.33, 13.89, 19.44, 25., 30.55, 36.1], angle_v=[2., 1.2, .25, .20, .15, .10, .10])
 
   # Temporary steer fault timeout
   # Maximum time to continuously read 0 torque from EPS
@@ -112,19 +113,19 @@ class CAR(Platforms):
   )
 
 
-VOLVO_VERSION_REQUEST = bytes([uds.SERVICE_TYPE.READ_DATA_BY_IDENTIFIER]) + \
-  p16(0xf1a2)
-VOLVO_VERSION_RESPONSE = bytes([uds.SERVICE_TYPE.READ_DATA_BY_IDENTIFIER + 0x40]) + \
-  p16(0xf1a2)
+#VOLVO_VERSION_REQUEST = bytes([uds.SERVICE_TYPE.READ_DATA_BY_IDENTIFIER]) + \
+#  p16(0xf1a2)
+#VOLVO_VERSION_RESPONSE = bytes([uds.SERVICE_TYPE.READ_DATA_BY_IDENTIFIER + 0x40]) + \
+#  p16(0xf1a2)
 
-FW_QUERY_CONFIG = FwQueryConfig(
-  requests=[
-    Request(
-      [VOLVO_VERSION_REQUEST],
-      [VOLVO_VERSION_RESPONSE],
-      bus=0,
-    ),
-  ],
-)
+#FW_QUERY_CONFIG = FwQueryConfig(
+#  requests=[
+#    Request(
+#      [VOLVO_VERSION_REQUEST],
+#      [VOLVO_VERSION_RESPONSE],
+#      bus=0,
+#    ),
+#  ],
+#)
 
 DBC = CAR.create_dbc_map()
