@@ -17,7 +17,8 @@ class CarInterface(CarInterfaceBase):
   def _get_params(ret: structs.CarParams, candidate, fingerprint, car_fw, alpha_long, is_release, docs):
     ret.brand = "volvo"
     #ret.carName = "volvo"
-    ret.safetyConfigs = [get_safety_config(car.CarParams.SafetyModel.volvo)]
+    #ret.safetyConfigs = [get_safety_config(car.CarParams.SafetyModel.volvo)]
+    ret.safetyConfigs = [get_safety_config(structs.CarParams.SafetyModel.volvo)]
     # ret.dashcamOnly = True
     ret.radarUnavailable = True
 
