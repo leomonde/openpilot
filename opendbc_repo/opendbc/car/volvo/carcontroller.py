@@ -41,7 +41,8 @@ class CarController(CarControllerBase):
     # run at 50hz
     if self.frame % 2 == 0:
       if CC.latActive and CS.out.vEgo > self.CP.minSteerSpeed:
-        apply_steer = apply_std_steer_angle_limits(actuators.steeringAngleDeg, self.apply_steer_prev, CS.out.vEgoRaw, CarControllerParams)
+        #apply_steer = apply_std_steer_angle_limits(actuators.steeringAngleDeg, self.apply_steer_prev, CS.out.vEgoRaw, CarControllerParams)
+        apply_steer = apply_std_steer_angle_limits(actuators.steeringAngleDeg, self.apply_steer_prev, CS.out.vEgoRaw, CS.out.steeringAngleDeg, CC.latActive, CarControllerParams.ANGLE_LIMITS)
         apply_steer_dir = SteerDirection.LEFT if apply_steer > 0 else SteerDirection.RIGHT
 
         error = CS.out.steeringAngleDeg - apply_steer

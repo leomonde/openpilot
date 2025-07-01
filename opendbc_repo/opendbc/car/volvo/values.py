@@ -1,15 +1,14 @@
 from dataclasses import dataclass, field
 from enum import IntEnum
 
-from cereal import car
-from openpilot.common.realtime import DT_CTRL
-from opendbc.car import AngleSteeringLimits, Bus, CarSpecs, DbcDict, PlatformConfig, Platforms, uds
+from opendbc.car import AngleSteeringLimits, Bus, CarSpecs, DbcDict, PlatformConfig, Platforms, uds, DT_CTRL
 from opendbc.car.docs_definitions import CarHarness, CarDocs, CarParts
 from opendbc.car.fw_query_definitions import FwQueryConfig, Request, p16
+from opendbc.car.structs import CarParams
 
 from opendbc.can.can_define import CANDefine
 
-Ecu = car.CarParams.Ecu
+Ecu = CarParams.Ecu
 
 """
 Volvo Electronic Control Units abbreviations and network topology
@@ -57,10 +56,7 @@ class SteerDirection(IntEnum):
 
 class CarControllerParams:
   # EUCD: Torque limit for steering is 50 CAN units
-  ANGLE_LIMITS: AngleSteeringLimits = AngleSteeringLimits(
-    # When output steering Angle not within range -1311 and 1310,
-    #   CANPacker packs wrong angle output to be decoded by panda
-    600,  # deg, reasonable limit
+  ANGLE_LIMITS: AngleSteeringLimits = AngleSteeringLimits(90,  # deg, reasonable limit
     ([0., 5., 15.], [5., .8, .15]),
     ([0., 5., 15.], [5., 3.5, 0.4]),
   )
