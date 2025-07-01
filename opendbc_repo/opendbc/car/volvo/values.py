@@ -2,10 +2,8 @@ from dataclasses import dataclass, field
 from enum import IntEnum
 
 from cereal import car
-#from panda.python import uds
 from openpilot.common.realtime import DT_CTRL
-#from opendbc.car import Bus, AngleRateLimit, CarSpecs, DbcDict, PlatformConfig, Platforms
-from opendbc.car import Bus, CarSpecs, DbcDict, PlatformConfig, Platforms
+from opendbc.car import Bus, CarSpecs, DbcDict, PlatformConfig, Platforms, uds
 from opendbc.car.docs_definitions import CarHarness, CarDocs, CarParts
 from opendbc.car.fw_query_definitions import FwQueryConfig, Request, p16
 
@@ -105,7 +103,7 @@ class VolvoCarSpecs(CarSpecs):
 
 
 class CAR(Platforms):
-  config: VolvoEUCDPlatformConfig
+  #config: VolvoEUCDPlatformConfig
 
   VOLVO_V60 = VolvoEUCDPlatformConfig(
     [VolvoCarDocs("Volvo V60")],
@@ -113,19 +111,19 @@ class CAR(Platforms):
   )
 
 
-#VOLVO_VERSION_REQUEST = bytes([uds.SERVICE_TYPE.READ_DATA_BY_IDENTIFIER]) + \
-#  p16(0xf1a2)
-#VOLVO_VERSION_RESPONSE = bytes([uds.SERVICE_TYPE.READ_DATA_BY_IDENTIFIER + 0x40]) + \
-#  p16(0xf1a2)
+VOLVO_VERSION_REQUEST = bytes([uds.SERVICE_TYPE.READ_DATA_BY_IDENTIFIER]) + \
+  p16(0xf1a2)
+VOLVO_VERSION_RESPONSE = bytes([uds.SERVICE_TYPE.READ_DATA_BY_IDENTIFIER + 0x40]) + \
+  p16(0xf1a2)
 
-#FW_QUERY_CONFIG = FwQueryConfig(
-#  requests=[
-#    Request(
-#      [VOLVO_VERSION_REQUEST],
-#      [VOLVO_VERSION_RESPONSE],
-#      bus=0,
-#    ),
-#  ],
-#)
+FW_QUERY_CONFIG = FwQueryConfig(
+  requests=[
+    Request(
+      [VOLVO_VERSION_REQUEST],
+      [VOLVO_VERSION_RESPONSE],
+      bus=0,
+    ),
+  ],
+)
 
 DBC = CAR.create_dbc_map()
