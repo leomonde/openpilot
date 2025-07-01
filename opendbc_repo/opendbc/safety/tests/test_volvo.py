@@ -50,7 +50,7 @@ class TestVolvoSafety(common.PandaCarSafetyTest, common.AngleSteeringSafetyTest)
     return self.packer.make_can_msg_panda("Brake_Info", self.VOLVO_MAIN_BUS, values)
 
   def _user_gas_msg(self, gas):
-    values = {"AccPedal": 20 if gas else 0}
+    values = {"AccPedal": 10 if gas else 0}
     return self.packer.make_can_msg_panda("AccPedal", self.VOLVO_MAIN_BUS, values)
   
   def _vehicle_moving_msg(self, speed: float):

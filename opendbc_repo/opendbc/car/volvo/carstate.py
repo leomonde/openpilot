@@ -28,7 +28,7 @@ class CarState(CarStateBase):
 
     # gas pedal
     ret.gas = pt_cp.vl["AccPedal"]["AccPedal"] / 100.0
-    ret.gasPressed = pt_cp.vl["AccPedal"]["AccPedal"] > 10  # compare the int to not mismatch panda
+    ret.gasPressed = pt_cp.vl["AccPedal"]["AccPedal"] >= 10  # compare the int to not mismatch panda
 
     # brake pedal
     ret.brake = pt_cp.vl["BrakePedal"]["BrakePressure"]

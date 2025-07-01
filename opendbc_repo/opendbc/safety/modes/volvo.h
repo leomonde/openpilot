@@ -38,7 +38,7 @@ static void volvo_rx_hook(const CANPacket_t *to_push) {
     if (addr == VOLVO_EUCD_AccPedal) {
       // Signal: AccPedal
       unsigned int gas_raw = ((GET_BYTE(to_push, 2) & 0x03U) << 8) | GET_BYTE(to_push, 3);
-      gas_pressed = gas_raw > 100U;
+      gas_pressed = gas_raw >= 100U;
     }
 
     if (addr == VOLVO_EUCD_Brake_Info) {
