@@ -102,5 +102,5 @@ Pipfile
 # Ignore all local history of files
 .history
 .ionide
-opendbc_repo/opendbc/safety/tests/libsafety/safety.gcda
 /opendbc_repo/opendbc/safety/tests/libsafety
+/opendbc/safety/tests/libsafety
