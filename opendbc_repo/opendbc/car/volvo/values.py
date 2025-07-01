@@ -3,7 +3,7 @@ from enum import IntEnum
 
 from cereal import car
 from openpilot.common.realtime import DT_CTRL
-from opendbc.car import Bus, CarSpecs, DbcDict, PlatformConfig, Platforms, uds
+from opendbc.car import AngleSteeringLimits, Bus, CarSpecs, DbcDict, PlatformConfig, Platforms, uds
 from opendbc.car.docs_definitions import CarHarness, CarDocs, CarParts
 from opendbc.car.fw_query_definitions import FwQueryConfig, Request, p16
 
@@ -57,8 +57,13 @@ class SteerDirection(IntEnum):
 
 class CarControllerParams:
   # EUCD: Torque limit for steering is 50 CAN units
-  #ANGLE_RATE_LIMIT_UP = AngleRateLimit(speed_bp=[0., 8.33, 13.89, 19.44, 25., 30.55, 36.1], angle_v=[2., 1.2, .25, .20, .15, .10, .10])
-  #ANGLE_RATE_LIMIT_DOWN = AngleRateLimit(speed_bp=[0., 8.33, 13.89, 19.44, 25., 30.55, 36.1], angle_v=[2., 1.2, .25, .20, .15, .10, .10])
+  ANGLE_LIMITS: AngleSteeringLimits = AngleSteeringLimits(
+    # When output steering Angle not within range -1311 and 1310,
+    #   CANPacker packs wrong angle output to be decoded by panda
+    600,  # deg, reasonable limit
+    ([0., 5., 15.], [5., .8, .15]),
+    ([0., 5., 15.], [5., 3.5, 0.4]),
+  )
 
   # Temporary steer fault timeout
   # Maximum time to continuously read 0 torque from EPS

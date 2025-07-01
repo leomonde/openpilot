@@ -1,3 +1,7 @@
+#pragma once
+
+#include "opendbc/safety/safety_declarations.h"
+
 // Safety-relevant CAN messages for EUCD platform.
 #define VOLVO_EUCD_AccPedal      0x020  // RX, gas pedal
 #define VOLVO_EUCD_FSM0          0x051  // RX from FSM, cruise state
@@ -22,10 +26,10 @@ const CanMsg VOLVO_EUCD_TX_MSGS[] = {
 
 // TODO: add counters
 RxCheck volvo_eucd_rx_checks[] = {
-  {.msg = {{VOLVO_EUCD_AccPedal,      VOLVO_MAIN_BUS, 8, .frequency = 100U}, { 0 }, { 0 }}},
-  {.msg = {{VOLVO_EUCD_FSM0,          VOLVO_CAM_BUS,  8, .frequency = 100U}, { 0 }, { 0 }}},
-  {.msg = {{VOLVO_EUCD_VehicleSpeed1, VOLVO_MAIN_BUS, 8, .frequency = 50U}, { 0 }, { 0 }}},
-  {.msg = {{VOLVO_EUCD_Brake_Info,    VOLVO_MAIN_BUS, 8, .frequency = 50U}, { 0 }, { 0 }}},
+  {.msg = {{VOLVO_EUCD_AccPedal,      VOLVO_MAIN_BUS, 8, .ignore_checksum = true, .ignore_counter = true, .ignore_quality_flag = true, .frequency = 100U}, { 0 }, { 0 }}},
+  {.msg = {{VOLVO_EUCD_FSM0,          VOLVO_CAM_BUS,  8, .ignore_checksum = true, .ignore_counter = true, .ignore_quality_flag = true, .frequency = 100U}, { 0 }, { 0 }}},
+  {.msg = {{VOLVO_EUCD_VehicleSpeed1, VOLVO_MAIN_BUS, 8, .ignore_checksum = true, .ignore_counter = true, .ignore_quality_flag = true, .frequency = 50U}, { 0 }, { 0 }}},
+  {.msg = {{VOLVO_EUCD_Brake_Info,    VOLVO_MAIN_BUS, 8, .ignore_checksum = true, .ignore_counter = true, .ignore_quality_flag = true, .frequency = 50U}, { 0 }, { 0 }}},
 };
 
 //static bool volvo_lkas_msg_check(int addr) {
@@ -71,6 +75,19 @@ static void volvo_rx_hook(const CANPacket_t *to_push) {
 }
 
 static bool volvo_tx_hook(const CANPacket_t *to_send) {
+  //const AngleSteeringLimits VOLVO_STEERING_LIMITS = {
+  //  .max_angle = 60000,  // 600 deg, reasonable limit
+  //  .angle_deg_to_can = 100,
+  //  .angle_rate_up_lookup = {
+  //    {0., 5., 15.},
+  //    {5., .8, .15}
+  //  },
+  //  .angle_rate_down_lookup = {
+  //    {0., 5., 15.},
+  //    {5., 3.5, .4}
+  //  },
+  //};
+
   bool tx = true;
   int addr = GET_ADDR(to_send);
   bool violation = false;
@@ -101,33 +118,6 @@ static bool volvo_tx_hook(const CANPacket_t *to_send) {
   return tx;
 }
 
-//static int volvo_fwd_hook(int bus_num, int addr) {
-//  int bus_fwd = -1;
-
-//  switch (bus_num) {
-//    case VOLVO_MAIN_BUS:
-//      if (addr == VOLVO_EUCD_PSCM1) {
-//        // Block PSCM state message
-//        bus_fwd = -1;
-//      } else {
-//        // Forward remaining traffic
-//        bus_fwd = VOLVO_CAM_BUS;
-//      }
-//      break;
-//    case VOLVO_CAM_BUS:
-//      if (addr == VOLVO_EUCD_FSM2) {
-//        // Block stock LKA message
-//        bus_fwd = -1;
-//      } else {
-//        // Forward remaining traffic
-//        bus_fwd = VOLVO_MAIN_BUS;
-//      }
-//      break;
-//  }
-
-//  return bus_fwd;
-//}
-
 static safety_config volvo_init(uint16_t param) {
   UNUSED(param);
   return BUILD_SAFETY_CFG(volvo_eucd_rx_checks, VOLVO_EUCD_TX_MSGS);
@@ -137,5 +127,4 @@ const safety_hooks volvo_hooks = {
   .init = volvo_init,
   .rx = volvo_rx_hook,
   .tx = volvo_tx_hook,
-  //.fwd = volvo_fwd_hook,
 };
