@@ -17,21 +17,6 @@
 #define VOLVO_AUX_BUS  1U
 #define VOLVO_CAM_BUS  2U
 
-const CanMsg VOLVO_EUCD_TX_MSGS[] = {
-  {VOLVO_EUCD_CCButtons, VOLVO_MAIN_BUS, 8, .check_relay = false},
-  {VOLVO_EUCD_PSCM1,     VOLVO_CAM_BUS,  8, .check_relay = false},
-  {VOLVO_EUCD_FSM2,      VOLVO_MAIN_BUS, 8, .check_relay = false},
-  {VOLVO_EUCD_FSM3,      VOLVO_MAIN_BUS, 8, .check_relay = false}
-};
-
-// TODO: add counters
-RxCheck volvo_eucd_rx_checks[] = {
-  {.msg = {{VOLVO_EUCD_AccPedal,      VOLVO_MAIN_BUS, 8, .ignore_checksum = true, .ignore_counter = true, .ignore_quality_flag = true, .frequency = 100U}, { 0 }, { 0 }}},
-  {.msg = {{VOLVO_EUCD_FSM0,          VOLVO_CAM_BUS,  8, .ignore_checksum = true, .ignore_counter = true, .ignore_quality_flag = true, .frequency = 100U}, { 0 }, { 0 }}},
-  {.msg = {{VOLVO_EUCD_VehicleSpeed1, VOLVO_MAIN_BUS, 8, .ignore_checksum = true, .ignore_counter = true, .ignore_quality_flag = true, .frequency = 50U}, { 0 }, { 0 }}},
-  {.msg = {{VOLVO_EUCD_Brake_Info,    VOLVO_MAIN_BUS, 8, .ignore_checksum = true, .ignore_counter = true, .ignore_quality_flag = true, .frequency = 50U}, { 0 }, { 0 }}},
-};
-
 //static bool volvo_lkas_msg_check(int addr) {
 //  return (addr == VOLVO_EUCD_FSM0)
 //      || (addr == VOLVO_EUCD_FSM2)
@@ -119,7 +104,24 @@ static bool volvo_tx_hook(const CANPacket_t *to_send) {
 }
 
 static safety_config volvo_init(uint16_t param) {
+  
   UNUSED(param);
+
+  static const CanMsg VOLVO_EUCD_TX_MSGS[] = {
+    {VOLVO_EUCD_CCButtons, VOLVO_MAIN_BUS, 8, .check_relay = true},
+    {VOLVO_EUCD_PSCM1,     VOLVO_CAM_BUS,  8, .check_relay = true},
+    {VOLVO_EUCD_FSM2,      VOLVO_MAIN_BUS, 8, .check_relay = true},
+    {VOLVO_EUCD_FSM3,      VOLVO_MAIN_BUS, 8, .check_relay = true}
+  };
+
+  // TODO: add counters
+  static RxCheck volvo_eucd_rx_checks[] = {
+    {.msg = {{VOLVO_EUCD_AccPedal,      VOLVO_MAIN_BUS, 8, .ignore_checksum = true, .ignore_counter = true, .ignore_quality_flag = true, .frequency = 100U}, { 0 }, { 0 }}},
+    {.msg = {{VOLVO_EUCD_FSM0,          VOLVO_CAM_BUS,  8, .ignore_checksum = true, .ignore_counter = true, .ignore_quality_flag = true, .frequency = 100U}, { 0 }, { 0 }}},
+    {.msg = {{VOLVO_EUCD_VehicleSpeed1, VOLVO_MAIN_BUS, 8, .ignore_checksum = true, .ignore_counter = true, .ignore_quality_flag = true, .frequency = 50U}, { 0 }, { 0 }}},
+    {.msg = {{VOLVO_EUCD_Brake_Info,    VOLVO_MAIN_BUS, 8, .ignore_checksum = true, .ignore_counter = true, .ignore_quality_flag = true, .frequency = 50U}, { 0 }, { 0 }}},
+  };
+
   return BUILD_SAFETY_CFG(volvo_eucd_rx_checks, VOLVO_EUCD_TX_MSGS);
 }
 

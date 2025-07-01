@@ -11,7 +11,9 @@ class TestVolvoSafety(common.PandaCarSafetyTest, common.AngleSteeringSafetyTest)
 
   TX_MSGS = [[0x127, 0], [0x262, 0], [0x270, 0], [0x246, 2]]
   GAS_PRESSED_THRESHOLD = 10
-  RELAY_MALFUNCTION_ADDRS = {0: (0x127, 0x262, 0x270), 2: (0x246,)}
+  STANDSTILL_THRESHOLD = 0.1
+  RELAY_MALFUNCTION_ADDRS = {0: [0x127, 0x262, 0x270], 2: [0x246]}
+  FWD_BLACKLISTED_ADDRS = {2: [0x127, 0x262, 0x270], 0: [0x246]}
 
   VOLVO_MAIN_BUS = 0
   #VOLVO_AUX_BUS = 1
@@ -40,16 +42,20 @@ class TestVolvoSafety(common.PandaCarSafetyTest, common.AngleSteeringSafetyTest)
     return self.packer.make_can_msg_panda("FSM0", self.VOLVO_CAM_BUS, values)
 
   def _speed_msg(self, speed: float):
-    values = {"VehicleSpeed": speed / 3.6}
+    values = {"VehicleSpeed": speed * 3.6}
     return self.packer.make_can_msg_panda("VehicleSpeed1", self.VOLVO_MAIN_BUS, values)
 
   def _user_brake_msg(self, brake):
-    values = {"BrakePedal": brake == 2}
+    values = {"BrakePedal": 2 if brake else 0}
     return self.packer.make_can_msg_panda("Brake_Info", self.VOLVO_MAIN_BUS, values)
 
   def _user_gas_msg(self, gas):
-    values = {"AccPedal": (gas / 100) > 10}
+    values = {"AccPedal": 20 if gas else 0}
     return self.packer.make_can_msg_panda("AccPedal", self.VOLVO_MAIN_BUS, values)
+  
+  def _vehicle_moving_msg(self, speed: float):
+    values = {"VehicleSpeed": 0 if speed <= self.STANDSTILL_THRESHOLD else 10}
+    return self.packer.make_can_msg_panda("VehicleSpeed1", 0, values)
 
 if __name__ == "__main__":
   unittest.main()
