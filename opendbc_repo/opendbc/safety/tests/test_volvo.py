@@ -33,9 +33,13 @@ class TestVolvoSafety(common.PandaCarSafetyTest, common.AngleSteeringSafetyTest)
     self.safety.set_safety_hooks(CarParams.SafetyModel.volvo, 0)
     self.safety.init_tests()
 
-  def _angle_meas_msg(self, angle: float):
-    values = {"SteeringAngleServo": angle}
-    return self.packer.make_can_msg_panda("PSCM1", self.VOLVO_MAIN_BUS, values)
+  #def _angle_cmd_msg(self, angle: float, enabled: bool):
+  #  values = {"LKAAngleReq": angle, "LKASteerDirection": 1 if enabled else 0}
+  #  return self.packer.make_can_msg_panda("FSM2", self.VOLVO_CAM_BUS, values)
+
+  #def _angle_meas_msg(self, angle: float):
+  #  values = {"SteeringAngleServo": angle}
+  #  return self.packer.make_can_msg_panda("PSCM1", self.VOLVO_MAIN_BUS, values)
 
   def _pcm_status_msg(self, enable):
     values = {"ACCStatus": 6 if enable else 0}
