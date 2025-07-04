@@ -39,9 +39,9 @@ static void volvo_rx_hook(const CANPacket_t *to_push) {
   if (bus == VOLVO_MAIN_BUS) {
     if (addr == VOLVO_EUCD_PSCM1) {
       // Current steering angle
-      float angle_meas_new = ((GET_BYTE(to_push, 2) << 8) | GET_BYTE(to_push, 3));
+      unsigned int angle_meas_new = ((GET_BYTE(to_push, 2) << 8) | GET_BYTE(to_push, 3));
       // Factor 0.0447, offset -1465
-      angle_meas_new = angle_meas_new * 0.0447 - 1465;
+      angle_meas_new = to_signed(angle_meas_new, 16) * 0.0447 - 1465;
       // update array of samples
       update_sample(&angle_meas, angle_meas_new);
     }
@@ -78,38 +78,37 @@ static void volvo_rx_hook(const CANPacket_t *to_push) {
 }
 
 static bool volvo_tx_hook(const CANPacket_t *to_send) {
-  //const AngleSteeringLimits VOLVO_STEERING_LIMITS = {
-  //  .max_angle = 4500,  // 45 deg, reasonable limit
-  //  .angle_deg_to_can = 100,
-  //  .angle_rate_up_lookup = {
-  //    {0., 5., 15.},
-  //    {5., .8, .15}
-  //  },
-  //  .angle_rate_down_lookup = {
-  //    {0., 5., 15.},
-  //    {5., 3.5, .4}
-  //  },
-  //};
+  const AngleSteeringLimits VOLVO_STEERING_LIMITS = {
+    .max_angle = 90,
+    .angle_deg_to_can = 25,
+    .angle_rate_up_lookup = {
+      {0., 5., 15.},
+      {5., .8, .15}
+    },
+    .angle_rate_down_lookup = {
+      {0., 5., 15.},
+      {5., 3.5, .4}
+    },
+  };
 
   bool tx = true;
   int addr = GET_ADDR(to_send);
   bool violation = false;
 
-  // Safety check for Lane Keep Assist action.
-  // steer cmd checks
-  //if (addr == VOLVO_EUCD_FSM2) {
-    // Signal: LKASteerDirection
-  //  unsigned int mode = GET_BYTE(to_send, 5) & 0x03U;
-  //  bool lka_active = mode != 0U;
+  if (addr == VOLVO_EUCD_FSM2) {
+    // steer cmd checks
     // Desired steering angle
-  //  float desired_angle = ((GET_BYTE(to_send, 3) & 0x3FU) << 8) | GET_BYTE(to_send, 4);
+    unsigned int desired_angle = ((GET_BYTE(to_send, 3) & 0x3FU) << 8) | GET_BYTE(to_send, 4);
     // Factor 0.04, offset -327.68
-  //  desired_angle = desired_angle * 0.04 - 327.68;
+    desired_angle = to_signed(desired_angle, 16) * 0.04 - 327.68;
+    
+    unsigned int mode = GET_BYTE(to_send, 5) & 0x03U;
+    bool lka_active = mode != 0U;
 
-  //  if (steer_angle_cmd_checks(desired_angle, lka_active, VOLVO_STEERING_LIMITS)) {
-  //    violation = true;
-  //  }
-  //}
+    if (steer_angle_cmd_checks(desired_angle, lka_active, VOLVO_STEERING_LIMITS)) {
+      violation = true;
+    }
+  }
 
   // Safety check for Lane Keep Assist action.
   if (addr == VOLVO_EUCD_FSM2) {
